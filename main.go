@@ -28,6 +28,9 @@ func main(){
 		ItemService.Insert(w, r, p)
 	})
 
+	router.PUT("/items/:id", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		ItemService.Update(w, r, p)
+	})
 
 	log.Printf("Server running on port %v", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))	

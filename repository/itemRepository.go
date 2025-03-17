@@ -44,3 +44,17 @@ func (i *ItemRepository) Insert(Item entity.Item) error {
 	}
 	return nil
 }
+
+func (pr *ItemRepository) Update(Item entity.Item) error {
+	result, err := pr.DB.Exec("UPDATE item SET item_name=$1, item_price=$2 WHERE item_code=$3", Item.ItemName, Item.ItemPrice, Item.ItemCode)
+	if err != nil {
+		return fmt.Errorf("error updating Item: %v", err)
+	}
+
+	rowsAffected,_ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("Item with Code: %d not found", Item.ItemCode)
+	}
+
+	return nil
+}
