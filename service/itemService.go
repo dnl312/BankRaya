@@ -94,3 +94,27 @@ func (is *ItemService) Update(w http.ResponseWriter, r *http.Request, p httprout
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 }
+
+func (is *ItemService) Delete(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
+
+	Item, err := is.ItemRepository.Delete(p.ByName("id"))
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Not Found", "detail": err.Error()})
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Internal Server Error", "detail": err.Error()})
+		}
+		return
+	}
+
+	response := map[string]interface{}{
+		"message": "Success delete",
+		"shipment": Item,
+	}
+	
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}

@@ -58,3 +58,33 @@ func (pr *ItemRepository) Update(Item entity.Item) error {
 
 	return nil
 }
+
+func (pr *ItemRepository) FindByID(id string) (*entity.Item, error) {
+	var Item entity.Item
+	err := pr.DB.QueryRow("SELECT * FROM item WHERE item_code=$1", id).Scan(&Item.ItemCode, &Item.ItemName, &Item.ItemPrice)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("Item detail with Code: %d not found", id)
+		}
+		return nil, err
+	}
+
+	if Item == (entity.Item{}) {
+		return nil, fmt.Errorf("Item with Code: %d not found", Item.ItemCode)
+	}
+
+	return &Item, nil
+}
+
+func (i *ItemRepository) Delete(id string) (*entity.Item, error) {
+	data, err := i.FindByID(id)
+	if err != nil {
+		return data, fmt.Errorf("error deleting Item: %v", err)
+	}
+	_, err = i.DB.Exec("DELETE FROM item WHERE item_code=$1", id)
+	if err != nil {
+		return data, fmt.Errorf("error deleting Item: %v", err)
+	}
+
+	return data, nil
+}

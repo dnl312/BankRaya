@@ -32,6 +32,10 @@ func main(){
 		ItemService.Update(w, r, p)
 	})
 
+	router.DELETE("/items/:id", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		ItemService.Delete(w, r, p)
+	})
+
 	log.Printf("Server running on port %v", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))	
 }
