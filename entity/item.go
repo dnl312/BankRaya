@@ -3,5 +3,5 @@ package entity
 type Item struct {
     ItemCode  string    
     ItemName  string 
-    ItemQty   float32
+    ItemPrice   float32
 }

@@ -3,6 +3,9 @@ package repository
 import (
 	"BankRaya/entity"
 	"database/sql"
+	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type ItemRepository struct{
@@ -13,8 +16,8 @@ func NewItemRepository(db *sql.DB) *ItemRepository {
 	return &ItemRepository{DB: db}
 }
 
-func (pr *ItemRepository) FindAll() ([]entity.Item, error) {
-	rows, err := pr.DB.Query("SELECT * FROM ITEM")
+func (i *ItemRepository) FindAll() ([]entity.Item, error) {
+	rows, err := i.DB.Query("SELECT * FROM ITEM")
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +26,7 @@ func (pr *ItemRepository) FindAll() ([]entity.Item, error) {
 	items := []entity.Item{}
 	for rows.Next() {
 		var item entity.Item
-		err := rows.Scan(&item.ItemCode, &item.ItemName, &item.ItemQty)
+		err := rows.Scan(&item.ItemCode, &item.ItemName, &item.ItemPrice)
 		if err != nil {
 			return nil, err
 		}
@@ -32,4 +35,12 @@ func (pr *ItemRepository) FindAll() ([]entity.Item, error) {
 	}
 
 	return items, nil
+}
+
+func (i *ItemRepository) Insert(Item entity.Item) error {
+	_, err := i.DB.Exec("INSERT INTO item (item_code, item_name, item_price) VALUES ($1, $2, $3)",  uuid.New().String(), Item.ItemName, Item.ItemPrice)
+	if err != nil {
+		return fmt.Errorf("error inserting Item: %v", err)
+	}
+	return nil
 }
